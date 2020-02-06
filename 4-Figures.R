@@ -10,10 +10,13 @@ library(ggmap)
 library(rgdal)
 
 # Oregon Data
-dat <- read_csv('~/Projects/Oregon-Coast-GFW-Data/data/OregonCoast_GFW_2016-2018.csv')
+dat <- read_csv('~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv')
+
+# Keep vessels on ocean
+dat <- filter(dat, loc == "OCEAN")
 
 # Remove duplicates
-dat <- dat[duplicated(dat$message_id), ]
+# dat <- dat[duplicated(dat$message_id), ]
 
 # Filter Oregon
 dat <- filter(dat, lat <= 46.23)
@@ -69,7 +72,9 @@ dat$loc <- apply(dat[,7:8], 1, FUN=check)
 write_csv(dat, "~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv")
 
 
-ggplot(dat2, aes(lon, lat)) + geom_point(color="red") + geom_point(data=xycoords, aes(x, y))
+dat <- read_csv('~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv')
+
+ggplot(dat, aes(lon, lat, color=)) + geom_point(color="red") + geom_point(data=xycoords, aes(x, y))
 
 # Custom color palette
 cbp1 <- c("#999999", "#E69F00", "#56B4E9", "#009E73",

@@ -36,8 +36,8 @@ PROC_DATA_LOC = '/home/server/pi/homes/woodilla/Projects/Oregon-Coast-GFW-Data/d
 REGION = 'OregonCoast'
 MAX_SPEED = 32
 
-beg_date = '2018-01-01'
-end_date = '2018-01-03'
+beg_date = '2016-01-01'
+end_date = '2018-12-31'
 region = 1
-parallel=False
-ncores=None
+parallel=True
+ncores=50
