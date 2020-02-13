@@ -10,84 +10,90 @@ library(ggmap)
 library(rgdal)
 
 # Oregon Data
-dat <- read_csv('~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv')
-
-# Keep vessels on ocean
-dat <- filter(dat, loc == "OCEAN")
+dat <- read_csv('~/Projects/Oregon-Coast-GFW-Data/data/OregonCoast_2016-01-01_2018-12-31.csv')
 
 # Remove duplicates
 # dat <- dat[duplicated(dat$message_id), ]
-
-# Filter Oregon
-dat <- filter(dat, lat <= 46.23)
-
-shape <- readOGR("~/Projects/Oregon-Coast-GFW-Data/data/Oregon Coast Shapefile/oregon_coastline.shp", layer = "oregon_coastline")
-coords <- coordinates(shape)
-coords2 <- unlist(coords)
-
-y <- coords2[coords2 >= 0]
-x <- coords2[coords2 < 0]
-
-xycoords <- data.frame(y = y, x = x)
-xycoords <- filter(xycoords, x <= -123.85)
-ggplot(xycoords, aes(x, y)) + geom_point()
-
-check <- function(ndat){
-  # print(nrow(ndat))
-  x1 = ndat[2]
-  y1 = ndat[1]
-  # print(x1)
-  # print(y1)
-  check_dat = data.frame()
-  ncoords <- filter(xycoords, y <= y1 + 0.1 & y >= y1 - 0.1)
-  if (nrow(ncoords) != 0){
-    for (i in 1:nrow(ncoords)){
-      # print(i)
-      ccheck <- ifelse(x1 <= ncoords$x[i], 1, 0)
-      check_dat <- rbind(check_dat, ccheck)
-    }
-    sumcheck <- sum(check_dat)
-    if (sumcheck == nrow(ncoords)){
-        return("OCEAN")
-      } else {
-        return("LAND")
-      }}
-  else {
-    return("NA")
-  }
-  
-}
-
-x1 = dat$lon[1]
-y1 = dat$lat[1]
-y1
-x1
-
-check(dat[200, 7:8])
-
-dat2 <- dat[1:100, ]
-
-dat$loc <- apply(dat[,7:8], 1, FUN=check)
-
-write_csv(dat, "~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv")
-
-
-dat <- read_csv('~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv')
-
-ggplot(dat, aes(lon, lat, color=)) + geom_point(color="red") + geom_point(data=xycoords, aes(x, y))
-
-# Custom color palette
-cbp1 <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
-          "#0072B2", "#D55E00", "#CC79A7")
-
-# Google key for map
-gkey <- read_file("~/Projects/predicting-illegal-fishing/Google_api_key.txt")
-register_google(key = gkey)
 
 LON1 = -134
 LON2 = -123
 LAT1 = 42
 LAT2 = 49
+
+# Filter Oregon
+# dat <- filter(dat, lat <= 46.23)
+
+# Filter single day for map
+dat2 <- filter(dat, year == 2016 & month == 3 & day == 15)
+
+# Filter lat lon coords
+dat3 <- filter(dat, lon >= LON1 & lon <= LON2)
+dat3 <- filter(dat3, lat >= LAT1 & lat <= LAT2)
+
+nrow(dat3)/nrow(dat)
+
+shape <- readOGR("~/Projects/Oregon-Coast-GFW-Data/data/Oregon Coast Shapefile/oregon_coastline.shp", layer = "oregon_coastline")
+# coords <- coordinates(shape)
+# coords2 <- unlist(coords)
+# 
+# y <- coords2[coords2 >= 0]
+# x <- coords2[coords2 < 0]
+# 
+# xycoords <- data.frame(y = y, x = x)
+# xycoords <- filter(xycoords, x <= -123.85)
+# ggplot(xycoords, aes(x, y)) + geom_point()
+# 
+# check <- function(ndat){
+#   # print(nrow(ndat))
+#   x1 = ndat[2]
+#   y1 = ndat[1]
+#   # print(x1)
+#   # print(y1)
+#   check_dat = data.frame()
+#   ncoords <- filter(xycoords, y <= y1 + 0.1 & y >= y1 - 0.1)
+#   if (nrow(ncoords) != 0){
+#     for (i in 1:nrow(ncoords)){
+#       # print(i)
+#       ccheck <- ifelse(x1 <= ncoords$x[i], 1, 0)
+#       check_dat <- rbind(check_dat, ccheck)
+#     }
+#     sumcheck <- sum(check_dat)
+#     if (sumcheck == nrow(ncoords)){
+#         return("OCEAN")
+#       } else {
+#         return("LAND")
+#       }}
+#   else {
+#     return("NA")
+#   }
+#   
+# }
+# 
+# x1 = dat$lon[1]
+# y1 = dat$lat[1]
+# y1
+# x1
+# 
+# check(dat[200, 7:8])
+# 
+# dat2 <- dat[1:100, ]
+# 
+# dat$loc <- apply(dat[,7:8], 1, FUN=check)
+# 
+# write_csv(dat, "~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv")
+# 
+# 
+# dat <- read_csv('~/Projects/Oregon-Coast-GFW-Data/data/COMPLETE_OregonCoast_GFW_2016-2018.csv')
+# 
+# ggplot(dat, aes(lon, lat, color=)) + geom_point(color="red") + geom_point(data=xycoords, aes(x, y))
+# 
+# # Custom color palette
+# cbp1 <- c("#999999", "#E69F00", "#56B4E9", "#009E73",
+#           "#0072B2", "#D55E00", "#CC79A7")
+# 
+# # Google key for map
+# gkey <- read_file("~/Projects/predicting-illegal-fishing/Google_api_key.txt")
+# register_google(key = gkey)
 
 # EEZ line
 #eez <- as.data.frame(read_csv("~/Projects/Puerto_Madryn_IUU_Fleet_Behavior/data/Argentina_EEZ.csv"))
@@ -104,7 +110,7 @@ LAT2 = 49
 
 # ------------------------------------------------------------------------------------
 # Figure 1. Map of Region
-
+dat2 <- 
 
 # Correct 4/24/2019
 bat <- getNOAA.bathy(LON1-10, LON2+10, LAT1-10, LAT2+10, res = 1, keep = TRUE)
